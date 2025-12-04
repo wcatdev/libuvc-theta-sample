@@ -175,8 +175,10 @@ main(int argc, char **argv)
 
 	struct gst_src *s;
 	int idx;
-	char *pipe_proc;
+	int opt;
+	char pipe_proc[256] = { 0 };
 	char *cmd_name;
+	char *dev_name = NULL;
 
 	cmd_name = rindex(argv[0], '/');
 	if (cmd_name == NULL)
@@ -184,12 +186,24 @@ main(int argc, char **argv)
 	else
 		cmd_name++;
 
+	while ((opt = getopt(argc, argv, "d:")) != -1) {
+		if (opt == 'd') {
+			dev_name = optarg;
+			break;
+		}
+	}
+
+	if (dev_name == NULL) {
+		fprintf(stderr, "usage: %s -d <loopback device>\n", cmd_name);
+		return -1;
+	}
+
 	if (strcmp(cmd_name, "gst_loopback") == 0)
-		pipe_proc = "decodebin ! autovideoconvert ! "
+		sprintf(pipe_proc, "decodebin ! autovideoconvert ! "
 			"video/x-raw,format=I420 ! identity drop-allocation=true !"
-			"v4l2sink device=/dev/video1 sync=false";
+			"v4l2sink device=%s sync=false", dev_name);
 	else
-		pipe_proc = " decodebin ! autovideosink sync=false";
+		strcpy(pipe_proc, " decodebin ! autovideosink sync=false");
 
 	if (!gst_src_init(&argc, &argv, pipe_proc))
 		return -1;
