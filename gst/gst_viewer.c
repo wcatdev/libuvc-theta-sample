@@ -199,8 +199,8 @@ main(int argc, char **argv)
 	}
 
 	if (strcmp(cmd_name, "gst_loopback") == 0)
-		sprintf(pipe_proc, "decodebin ! autovideoconvert ! "
-			"video/x-raw,format=I420 ! identity drop-allocation=true !"
+		sprintf(pipe_proc, "decodebin ! videoconvert ! "
+			"video/x-raw,format=I420,width=1920,height=960 ! identity drop-allocation=true !"
 			"v4l2sink device=%s sync=false", dev_name);
 	else
 		strcpy(pipe_proc, " decodebin ! autovideosink sync=false");
@@ -259,7 +259,7 @@ main(int argc, char **argv)
 	pthread_create(&thr, NULL, keywait, &src);
 	
 	res = thetauvc_get_stream_ctrl_format_size(devh,
-			THETAUVC_MODE_UHD_2997, &ctrl);
+			THETAUVC_MODE_FHD_2997, &ctrl);
 	src.dwFrameInterval = ctrl.dwFrameInterval;
 	src.dwClockFrequency = ctrl.dwClockFrequency;
 
