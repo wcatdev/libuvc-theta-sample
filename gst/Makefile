@@ -47,5 +47,8 @@ gst_viewer: $(OBJS)
 gst_loopback: gst_viewer
 	ln -sf $< $@
 
+install: $(EXES)
+	install $(EXES) /usr/local/bin/
+
 clean:
 	@$(RM) $(OBJS) $(EXES)
